@@ -8,6 +8,9 @@ export class BookmarkController {
   // 资源列表
   private resourcesCategoriesList = []
 
+
+  // resources
+  // resources/:id
   @Get('resources-categories-list')
   @Throttle({
     wait: 2000,

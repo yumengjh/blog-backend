@@ -10,6 +10,7 @@ export class BookmarkService {
     if (enabledStatus !== undefined && enabledStatus !== null) {
       sql += ` WHERE enabled = ${enabledStatus}`;
     }
+    sql += ' ORDER BY sort_order ASC';
     return await this.supabaseQueryService.executeSQL(sql);
   }
 
