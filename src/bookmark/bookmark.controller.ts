@@ -1,7 +1,8 @@
-import { Controller, Get, HttpException, HttpStatus, Query, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpException, HttpStatus, Query, UseGuards, Req } from '@nestjs/common';
 import { BookmarkService } from './bookmark.service';
 import { Throttle } from '../decorators/throttle-debounce.decorator';
 import { DynamicAuthGuard } from '../guards/dynamic-auth.guard';
+import { Request } from 'express';
 
 @Controller('bookmark')
 @UseGuards(DynamicAuthGuard)
@@ -15,11 +16,15 @@ export class BookmarkController {
   // resources/:id
   @Get('resources-categories-list')
   @Throttle({
-    wait: 2000,
+    wait: 3000,
     errorMessage: '获取资源分类列表操作太频繁，请稍后再试',
     errorStatus: HttpStatus.TOO_MANY_REQUESTS
   })
-  async getResourcesCategoriesList(@Query('enabledStatus') enabledStatus?: boolean) {
+  async getResourcesCategoriesList(
+    // 此参数用于 @Throttle 装饰器获取请求信息，用于 IP 限流
+    @Req() req: Request,
+    @Query('enabledStatus') enabledStatus?: boolean
+  ) {
     const res = await this.bookmarkService.getResourcesCategoriesList(enabledStatus);
     if (res.data.length === 0) {
       throw new HttpException({
@@ -53,11 +58,6 @@ export class BookmarkController {
   }
 
   @Get('resources-list')
-  // @Throttle({
-  //   wait: 2000,
-  //   errorMessage: '获取资源列表操作太频繁，请稍后再试',
-  //   errorStatus: HttpStatus.TOO_MANY_REQUESTS
-  // })
   async getResourcesList(@Query('categoryId') categoryId: string, @Query('enabledStatus') enabledStatus?: boolean) {
     if (!categoryId) {
       throw new HttpException({
