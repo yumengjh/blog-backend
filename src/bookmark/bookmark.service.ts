@@ -19,6 +19,7 @@ export class BookmarkService {
     if (enabledStatus !== undefined && enabledStatus !== null) {
       sql += ` WHERE enabled = ${enabledStatus}`;
     }
+    sql += ' ORDER BY updated_at DESC';
     return await this.supabaseQueryService.executeSQL(sql);
   }
 } 

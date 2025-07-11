@@ -21,7 +21,14 @@ export class BookmarkController {
   })
   async getResourcesCategoriesList(@Query('enabledStatus') enabledStatus?: boolean) {
     const res = await this.bookmarkService.getResourcesCategoriesList(enabledStatus);
-    if (res.error) {
+    if (res.data.length === 0) {
+      throw new HttpException({
+        statusCode: HttpStatus.NOT_FOUND,
+        message: '数据为空，请检查字段是否正确',
+        data: null
+      }, HttpStatus.NOT_FOUND);
+    }
+    else if (res.error) {
       throw new HttpException({
         statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
         message: res.error.message,
